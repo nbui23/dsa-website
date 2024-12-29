@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loop Invariants - COMP3804</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/topic-content.css">
+</head>
+<body>
+    <header>
+        <nav class="top-nav">
+            <a href="../topics.html" class="back-link">← Back to Topics</a>
+            <h1>Loop Invariants</h1>
+        </nav>
+    </header>
+
+    <main class="topic-content">
+        <section class="introduction">
+            <h2>Understanding Loop Invariants</h2>
+            <p>
+                Think of a loop invariant as a "truth contract" that helps us understand why our
+                algorithm works. It's like a property that remains consistent throughout the loop's
+                execution, helping us build confidence in our code's correctness.
+            </p>
+            <div class="concept-metaphor">
+                <h3>Real-world Analogy 🥛</h3>
+                <p>
+                    Imagine climbing a staircase while carrying a cup of water. The water staying
+                    in the cup is your "invariant" - it must remain true at each step. Just as you
+                    check the water hasn't spilled after each step, we verify our loop invariant
+                    after each iteration.
+                </p>
+            </div>
+        </section>
+
+        <section class="key-concepts">
+            <h2>The Three Pillars of Loop Invariants</h2>
+            <div class="concept-card">
+                <div class="pillar">
+                    <h3>1. Initialization</h3>
+                    <p class="intuition">
+                        Think of this as "starting on solid ground." Before we begin looping,
+                        we need to make sure our invariant is true. This gives us a strong
+                        foundation to build upon.
+                    </p>
+                    <div class="example-snippet">
+                        <p>For a sorting algorithm: "At the start, having one element means
+                        it's already sorted - that's our solid ground."</p>
+                    </div>
+                </div>
+
+                <div class="pillar">
+                    <h3>2. Maintenance</h3>
+                    <p class="intuition">
+                        This is like maintaining balance while walking - if our invariant is
+                        true for one step, we ensure it stays true for the next step. Each
+                        iteration preserves our "truth contract."
+                    </p>
+                    <div class="example-snippet">
+                        <p>In sorting: "If we've kept things sorted so far, placing one new
+                        element in its correct position maintains the sorted property."</p>
+                    </div>
+                </div>
+
+                <div class="pillar">
+                    <h3>3. Termination</h3>
+                    <p class="intuition">
+                        This is our "arrival check." When the loop finishes, our invariant
+                        should help prove that we've achieved our goal. It connects what we've
+                        maintained to what we wanted to accomplish.
+                    </p>
+                    <div class="example-snippet">
+                        <p>For sorting: "Once we've processed all elements while maintaining
+                        sorted order, the entire array must be sorted."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="examples">
+            <h2>Real Algorithm Examples</h2>
+
+            <!-- Insertion Sort Example -->
+            <div class="algorithm-example">
+                <h3>Insertion Sort: Building a Sorted Hand of Cards 🃏</h3>
+                <div class="intuition-block">
+                    <p>
+                        Imagine sorting playing cards in your hand. You start with one card
+                        (trivially sorted), then pick up and place each new card in its correct
+                        position among the cards you're already holding.
+                    </p>
+                </div>
+
+                <div class="code-block">
+                    <pre><code>INSERTION-SORT(A)
+    for j = 2 to length[A]
+        key = A[j]        // Pick up next card
+        i = j - 1
+        while i > 0 and A[i] > key
+            A[i + 1] = A[i]    // Shift cards right
+            i = i - 1
+        A[i + 1] = key        // Place card in correct spot</code></pre>
+                </div>
+
+                <div class="invariant-analysis">
+                    <div class="visual-state">
+                        <h4>Visual Progress</h4>
+                        <div class="array-state">
+                            <p>Initial: [5│ 2, 4, 1, 3]</p>
+                            <p class="active">After j=2: [2, 5│ 4, 1, 3]</p>
+                            <p>After j=3: [2, 4, 5│ 1, 3]</p>
+                            <p>After j=4: [1, 2, 4, 5│ 3]</p>
+                            <p>Final: [1, 2, 3, 4, 5]</p>
+                        </div>
+                        <p class="state-note">
+                            The │ symbol shows the boundary between sorted (left) and
+                            unsorted (right) portions
+                        </p>
+                    </div>
+
+                    <h4>Loop Invariant Explained</h4>
+                    <p class="invariant-statement">
+                        At the start of each iteration, the subarray A[1..j-1] is sorted
+                        and contains the original elements from those positions.
+                    </p>
+
+                    <div class="proof-steps">
+                        <div class="proof-step">
+                            <h5>Initialization (Base Case)</h5>
+                            <p>
+                                When j=2, we have just one element A[1]. One element is
+                                always sorted by itself, just like having one card in your hand.
+                            </p>
+                        </div>
+
+                        <div class="proof-step">
+                            <h5>Maintenance</h5>
+                            <p>
+                                Each time we pick up a new card (A[j]), we shift larger cards
+                                right until we find the correct spot. This maintains our sorted
+                                property - like keeping your hand of cards sorted as you pick up
+                                each new card.
+                            </p>
+                        </div>
+
+                        <div class="proof-step">
+                            <h5>Termination</h5>
+                            <p>
+                                When we've processed all cards (j > length[A]), our invariant
+                                tells us A[1..n] is sorted. We've achieved our goal of sorting
+                                the entire array!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="algorithm-example-divider"></div>
+
+            <!-- Find Maximum Example -->
+            <div class="algorithm-example">
+                <h3>Finding Maximum: Keeping Track of a Champion 🏆</h3>
+                <div class="intuition-block">
+                    <p>
+                        Think of this as a tournament where each number challenges our current
+                        champion. The champion only changes if a stronger challenger appears.
+                    </p>
+                </div>
+
+                <div class="code-block">
+                    <pre><code>FIND-MAXIMUM(A)
+    max = A[1]    // Current champion
+    for i = 2 to length[A]
+        if A[i] > max
+            max = A[i]    // New champion found
+    return max</code></pre>
+                </div>
+
+                <div class="invariant-analysis">
+                    <div class="visual-state">
+                        <h4>Visual Progress</h4>
+                        <div class="array-state">
+                            <p>Initial (max=5): [5│ 3, 8, 1, 6]</p>
+                            <p>After i=2 (max=5): [5, 3│ 8, 1, 6]</p>
+                            <p class="active">After i=3 (max=8): [5, 3, 8│ 1, 6]</p>
+                            <p>After i=4 (max=8): [5, 3, 8, 1│ 6]</p>
+                            <p>Final (max=8): [5, 3, 8, 1, 6]</p>
+                        </div>
+                        <p class="state-note">
+                            Bold numbers show the current maximum value found
+                        </p>
+                    </div>
+
+                    <h4>Loop Invariant Explained</h4>
+                    <p class="invariant-statement">
+                        At each step, max holds the largest value seen so far in A[1..i-1]
+                    </p>
+
+                    <div class="proof-steps">
+                        <div class="proof-step">
+                            <h5>Initialization</h5>
+                            <p>
+                                We start with A[1] as our champion - it's the largest (and only)
+                                element we've seen so far.
+                            </p>
+                        </div>
+
+                        <div class="proof-step">
+                            <h5>Maintenance</h5>
+                            <p>
+                                Each new element challenges our champion. If it's larger, it
+                                becomes the new champion. If not, our current champion remains.
+                                This ensures max always holds the largest value seen so far.
+                            </p>
+                        </div>
+
+                        <div class="proof-step">
+                            <h5>Termination</h5>
+                            <p>
+                                After all challengers (elements) have been considered, our
+                                champion must be the largest element in the entire array.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="key-takeaways">
+            <h2>Building Intuition: Key Insights</h2>
+            <div class="insight-cards">
+                <div class="insight-card">
+                    <h3>Think in States</h3>
+                    <p>
+                        Loop invariants describe what remains true between states. Focus on
+                        what properties are maintained as your algorithm progresses.
+                    </p>
+                </div>
+                <div class="insight-card">
+                    <h3>Use Analogies</h3>
+                    <p>
+                        Connect algorithms to real-world processes. Sorting is like organizing
+                        cards, finding maximum is like a tournament, etc.
+                    </p>
+                </div>
+                <div class="insight-card">
+                    <h3>Visualize Progress</h3>
+                    <p>
+                        Draw or imagine how your data changes at each step. The invariant
+                        should be visible in these snapshots.
+                    </p>
+                </div>
+                <div class="insight-card">
+                    <h3>Practice Recognition</h3>
+                    <p>
+                        As you study algorithms, try to identify their invariants. This skill
+                        improves with practice and helps in designing new algorithms.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Norman Bui</p>
+    </footer>
+
+    <script src="../../js/topic-content.js"></script>
+</body>
+</html>
