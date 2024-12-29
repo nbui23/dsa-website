@@ -1,5 +1,16 @@
 // Initialize UI elements after DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+  let faviconLink = document.querySelector("link[rel='icon']");
+
+  if (!faviconLink) {
+    faviconLink = document.createElement("link");
+    faviconLink.rel = "icon";
+    faviconLink.type = "image/jpeg";
+    document.head.appendChild(faviconLink);
+  }
+
+  faviconLink.href = "https://nbui23.github.io/dsa-website/assets/my-king.jpg";
+
     // Create and append theme toggle button
     const toggleButton = document.createElement('button');
     toggleButton.className = 'theme-toggle';
